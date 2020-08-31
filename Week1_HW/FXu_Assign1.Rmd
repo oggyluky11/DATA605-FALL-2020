@@ -1,0 +1,229 @@
+---
+title: "DATA605 ASSIGNMENT 1"
+author: "Fan Xu"
+date: "8/30/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load library, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+```
+
+
+# Problem set 1
+
+You can think of vectors representing many dimensions of related information. For instance, Netflix might store all the ratings a user gives to movies in a vector. This is clearly a vector of very large dimensions (in the millions) and very sparse as the user might have rated only a few movies. Similarly, Amazon might store the items purchased by a user in a vector, with each slot or dimension representing a unique product and the value of the slot, the number of such items the user bought. One task that is frequently done in these settings is to find similarities between users. And, we can use dot-product between vectors to do just that. As you know, the dot-product is proportional to the length of two vectors and to the angle between them. In fact, the dot-product between two vectors, normalized by their lengths is called as the cosine distance and is frequently used in recommendation engines.
+
+You can use R-markdown to submit your responses to this problem set. If you decide to do it in paper, then please either scan it or take a picture using a smartphone and attach that picture. Please make sure that the picture is legible before submitting.
+
+## Question 1 
+**Calculate the dot product u.v where $\vec{u}=\begin{bmatrix} 0.5\\0.5 \end{bmatrix} \vec{v}= \begin{bmatrix} 3\\-4 \end{bmatrix}$**
+
+**Answer:**
+
+The formula of dot product of two vectors $\vec{u} = \begin{bmatrix}u_{1}\\u_{2}\end{bmatrix}$ & $\vec{v} = \begin{bmatrix}v_{1}\\v_{2}\end{bmatrix}$ is:
+
+$\vec{u}\cdot \vec{v} = u_{1}v_{1} * u_{2}v_{2}$
+```{r P1 Q1}
+u <- c(0.5, 0.5)
+v <- c(3,-4)
+
+dot_uv <- (u%*%v)[1,1]
+
+print(str_c('The dot product of u & v is: ', dot_uv %>% as.character()))
+```
+
+## Question 2
+**What are the lengths of u and v? Please note that the mathematical notion of the length of a vector is not the same as a computer science definition.**
+
+**Answer:**
+
+The formula of the length of a vector of two elements $\vec{u} = \begin{bmatrix}u_{1}\\u_{2}\end{bmatrix}$ is:
+
+$\left \| \vec{u} \right \|= \sqrt{u_{1}^{2}+u_{2}^{2}}$
+
+```{r P1 Q2}
+mag_u <- sqrt((u%*%u)[1,1])
+
+mag_v <- sqrt((v%*%v)[1,1])
+
+
+print(str_c('The length (magnitude) of u is: ', mag_u %>% as.character()))
+print(str_c('The length (magnitude) of v is: ', mag_v %>% as.character()))
+```
+
+## Question 3
+**What is the linear combination: 3u - 2v?**
+
+**Answer:**
+
+$3\vec{u}-2\vec{v} = 3\begin{bmatrix}0.5\\0.5\end{bmatrix}-2\begin{bmatrix}3\\-4\end{bmatrix}=\begin{bmatrix}1.5\\1.5\end{bmatrix}-\begin{bmatrix}6\\-8\end{bmatrix}=\begin{bmatrix}-4.5\\9.5\end{bmatrix}$
+```{r P1 Q3}
+q3 <- 3*u - 2*v
+q3
+```
+
+## Question 4
+**What is the angle between u and v**
+
+**Answer:**
+
+We first calculate $COS\theta$
+
+$COS\theta = \frac{\vec{u}\cdot \vec{v}}{\begin{Vmatrix}\vec{u}\end{Vmatrix}\begin{Vmatrix}\vec{v}\end{Vmatrix}}$
+
+then
+$\theta = ACOS\theta$
+```{r}
+cos_theta <- dot_uv/(mag_u*mag_v)
+
+theta_r <- acos(cos_theta)
+theta_d <- theta_r*180/pi
+
+print(str_c('The answer to question 4 is: radians ', theta_r %>% as.character(), 
+            ' or degrees ', theta_d %>% as.character()))
+```
+
+# Problem set 2
+
+Set up a system of equations with 3 variables and 3 constraints and solve for x. Please write a function in R that will take two variables (matrix A & constraint vector b) and solve using elimination. Your function should produce the right answer for the system of equations for any 3-variable, 3-equation system. You don't have to worry about degenerate cases and can safely assume that the function will only be tested with a system of equations that has a solution. Please note that you do have to worry about zero pivots, though. Please note that you should not use the built-in function solve to solve this system or use matrix inverses. The approach that you should employ is to construct an Upper Triangular Matrix and then back-substitute to get the solution. Alternatively, you can augment the matrix A with vector b and jointly apply the Gauss Jordan elimination procedure.
+
+Please test it with the system below and it should produce a solution x = [-1:55;-0:32; 0:95]
+
+
+Please send your code (as an R-markdown file, named using your first initial, last name,
+assignment, problem set. For instance, if I submit the code for this assignment, it will be
+called **GIyengar_Assign1.Rmd**.
+
+**Answer:**
+
+Gauss-Jordan elimination procedure: 
+(Refer to Textbook: **A First Course in Linear Algebra** Pg.30)
+
+$\begin{bmatrix}1 & 1 & 3\\ 2 & -1 & 5\\ -1 & -2 & 4\end{bmatrix}\begin{bmatrix}x_{1}\\ x_{2}\\ x_{3}\end{bmatrix} = \begin{bmatrix}1\\ 2\\ 6\end{bmatrix}$
+
+let i refers to a row that is being converted, j refers to a column that is being converted, and r keeps track of the number of nonzero rows.
+
+    1. Set j = 0 and r = 0.
+    2. Increase j by 1. If j now equals n + 1, then stop.
+    3. Examine the entries of A in column j located in rows r + 1 through m. If all of these entries are zero, then go to Step 2.
+    4. Choose a row from rows r + 1 through m with a nonzero entry in column j. Let i denote the index for this row.
+    5. Increase r by 1.
+    6. Use the first row operation to swap rows i and r.
+    7. Use the second row operation to convert the entry in row r and column j to a 1.
+    8. Use the third row operation with row r to convert every other entry of column j to zero.
+    9. Go to Step 2.
+
+
+**Answer:**
+1. Create functions for row operations 1, 2 and 3 as below:
+
+  a. Operation 1: Swap the location of rows x and y;
+  
+  b. Multiply row x by a nonzero scalar s to make a 'leading 1';
+  
+  c. Following operation 2, multiply the 'leading 1' in row x by a sacalar s and add to other rows to make all other elements in the same column to 0.
+  
+```{r Q2 Part 1}
+row_op_1 <- function(a, x, y) {
+  temp <- a[x,]
+  a[x,] <- a[y,]
+  a[y,] <- temp
+  return(a)
+}
+
+row_op_2 <- function(a, x) {
+  s <- 1/head(a[x,][a[x,]!=0],1)
+  a[x,] <- a[x,] * s
+  return(a)
+}
+
+row_op_3 <- function(a,x){
+  for (i in 1:nrow(a)) {
+    if(i != x){
+      p <- head(which(a[x,]!=0),1)
+      s <- -a[i,p]/a[x,p]
+      a[i,] <- s*a[x,]+a[i,]
+      #print(a[i,])
+    }
+  }
+  return(a)
+}
+```
+
+
+2. Create a function called `Solve_Linear_System`, with Matrix M and constraint vector V as input, and solution x (rounded to 2 decimal places)as output. (Assuming the input system of equations should have a solution as instructed)
+```{r Q2 Part2}
+
+Solve_Linear_System <- function(M,V){
+  m <- nrow(M)
+  n <- ncol(M)
+  r <- 0
+  MV <- cbind(M,V)
+  for (j in 1:n){
+    i <- r+1
+    while(i<=m & M[i,j]==0){
+      i <- i+1
+    }
+    if(i < m+1){
+      r <- r+1
+      MV <- MV %>% row_op_1(i,r) %>%
+        row_op_2(r) %>%
+        row_op_3(r)
+    }
+  }
+  x <- MV[,'V'] %>% round(2)
+  return(x)
+}
+
+
+```
+
+
+3. Create matrix A and constraint vector b
+```{r}
+A <- matrix(c(1,1,3,2,-1,5,-1,-2,4), nrow = 3, byrow = TRUE)
+b <- c(1,2,6)
+
+A
+b
+```
+
+4. Solve for x using the customized function `Solve_Linear_System`.
+```{r}
+Solve_Linear_System(A,b)
+
+```
+
+
