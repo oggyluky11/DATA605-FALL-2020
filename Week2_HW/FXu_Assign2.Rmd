@@ -1,0 +1,217 @@
+---
+title: "DATA605 ASSIGNMENT 2"
+author: "Fan Xu"
+date: "9/5/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load library, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+```
+
+
+# Problem set 1
+Please typeset your response using LaTeX mode in RStudio. If you do it in paper, please either scan or take a picture of the work and submit it. Please ensure that your image is legible and that your submissions are named using your first initial, last name, assignment and problem set within the assignment. E.g. LFulton_Assignment2_PS1.png
+
+## Question 1
+**Show that** $A^{T}A\neq AA^{T}$ **in general. (Proof and demonstration.)**
+
+**Answer:**
+
+**Proof: **
+
+Suppose $A$ is an $m\times n$ matrix and so $A^{T}$ is an $n\times m$ matrix, then according to Theorem EMP in textbook Page 180, <br><br>
+(1) for $1\leq i,j \leq n$, the individual entries of $A^{T}A$ is given by
+
+$\begin{bmatrix}A^{T}A\end{bmatrix}_{ij} = \sum_{k=1}^{n}\begin{bmatrix}A^{T}\end{bmatrix}_{ik}\begin{bmatrix}A\end{bmatrix}_{kj}$ and <br><br>
+(2) for $1\leq i,j \leq m$, the individual entries of $AA^{T}$ is given by
+
+$\begin{bmatrix}AA^{T}\end{bmatrix}_{ij} = \sum_{k=1}^{m}\begin{bmatrix}A\end{bmatrix}_{ik}\begin{bmatrix}A^{T}\end{bmatrix}_{kj}$
+
+where $A^{T}A$ is an $n\times n$ matrix while $AA^{T}$ is an $m\times m$ matrix.
+
+Therefore, in general situation, when $m\neq n$, $A^{T}A\neq AA^{T}$.
+
+**Demostration:**
+
+Set $A=\begin{bmatrix}1 & 1 & 3\\ 2 &  -1& 5\end{bmatrix}$ (a $2 \times3$ matrix) and $A^{T}=\begin{bmatrix}1 & 2\\ 1 & -1\\ 3 & 5\end{bmatrix}$ (a $3 \times2$ matrix),
+
+we find
+
+$A^{T}A=\begin{bmatrix}1 & 2\\ 1 & -1\\ 3 & 5\end{bmatrix}\begin{bmatrix}1 & 1 & 3\\ 2 &  -1& 5\end{bmatrix}=\begin{bmatrix}5 &  -1& 13\\ -1 &  2& -2\\  13&  -2& 34\end{bmatrix}$ (a $3\times3$ matrix) and <br>
+$AA^{T}=\begin{bmatrix}1 & 1 & 3\\ 2 &  -1& 5\end{bmatrix}\begin{bmatrix}1 & 2\\ 1 & -1\\ 3 & 5\end{bmatrix}=\begin{bmatrix}11 &  16\\ 16 &  30\end{bmatrix}$ (a $2\times2$ matrix) <br>
+$A^{T}A\neq AA^{T}$
+
+
+```{r P1 Q1}
+A <- matrix(c(1,1,3,2,-1,5), nrow = 2, byrow = TRUE)
+
+print('Matrix A:')
+A
+print('Matrix t(A):')
+t(A)
+print('t(A)%*%A:')
+t(A)%*%A
+print('A%*%t(A)')
+A%*%t(A)
+```
+
+## Question 2
+**For a special type of square matrix A, we get** $A^{T}A= AA^{T}$ **. Under what conditions could this be true? (Hint: The Identity matrix I is an example of such a matrix).**
+
+**Answer:**
+
+According to the proof in question 1 above, <br>
+(1) for $1\leq i,j \leq n$, the individual entries of $A^{T}A$ is given by
+
+$\begin{bmatrix}A^{T}A\end{bmatrix}_{ij} = \sum_{k=1}^{n}\begin{bmatrix}A^{T}\end{bmatrix}_{ik}\begin{bmatrix}A\end{bmatrix}_{kj}$ and <br><br>
+(2) for $1\leq i,j \leq m$, the individual entries of $AA^{T}$ is given by
+
+$\begin{bmatrix}AA^{T}\end{bmatrix}_{ij} = \sum_{k=1}^{m}\begin{bmatrix}A\end{bmatrix}_{ik}\begin{bmatrix}A^{T}\end{bmatrix}_{kj}$
+
+where $A^{T}A$ is an $n\times n$ matrix while $AA^{T}$ is an $m\times m$ matrix.
+
+Therefore to get $A^{T}A= AA^{T}$, the following conditions need to be met:
+
+(1) The matrix A is a sqare matrix, or say $m = n$ (Which has been assumed in the question), 
+(2) The matrix A is symmetric, or say $A=A^{T}$ ($\begin{bmatrix}A\end{bmatrix}_{ij}=\begin{bmatrix}A^{T}\end{bmatrix}_{ji}$ where $1 \leq i,j \leq m$ or  $n$).
+
+
+
+
+
+
+# Problem set 2
+Matrix factorization is a very important problem. There are supercomputers built just to do matrix factorizations. Every second you are on an airplane, matrices are being factorized. Radars that track 
+flights use a technique called Kalman filtering. At the heart of Kalman Filtering is a Matrix Factorization operation. Kalman Filters are solving linear systems of equations when they track your flight using radars.<br>
+Write an R function to factorize a square matrix A into LU or LDU, whichever you prefer. Please submit your response in an R Markdown document using our class naming convention, E.g. LFulton_Assignment2_PS2.png <br>
+You don't have to worry about permuting rows of A and you can assume that A is less than 5x5, if you need to hard-code any variables in your code. If you doing the entire assignment in R, then please submit only one markdown document for both the problems.
+
+**Answer:**
+
+1. Create function `Matrix_Fct` to factorize a square matrix A into `LU` or `LDU`. 'LU' and 'LDU' are options in argument `method`. The default method is 'LU'.
+
+For method `LU`, the function has three outputs including matrix `L`, matrix `U`, and `Validation` which checks whether A == LU or not.
+
+For method `LDU`, the function has four outputs including matrix `L`, matrix `D`, matrix `U`, and `Validation` which checks whether A == LDU or not.
+
+
+```{r P2 part 1}
+Matrix_Fct <- function(a, method = 'LU'){
+  
+  stopifnot(nrow(a) == ncol(a)) # Error handling if matrix is not square
+  
+  L <- diag(nrow(a)) # Create initial identity matrix as L
+  U <- a # Create initial matrix U with input as matrix A
+  for (j in 1:ncol(a)){
+    for (i in 1:nrow(a)){
+      if (i > j){
+        s <- -U[i,j]/U[j,j] # Get scalar
+        U[i,] <- s*U[j,]+U[i,] # zero out the lower trangle of the matrix 
+        L[i,j] <- -s # construct matrix L with the scalar (with negative sign)
+      }
+    }
+  }
+  if (method == 'LU'){
+    v <- all(round(a,4) == round(L%*%U,4)) # check whether A = L%*%U, round to 4 decimal places
+    return(list('L' = L, 'U' = U, 'Validation: A == L%*%U' = v))
+  }
+  else if (method == 'LDU'){
+    D <- diag(nrow(U)) # Create initial identity matrix as D
+    diag(D) <- diag(U) # Input diagonal values of U into diagonals of D
+    for (i in 1:nrow(U)){
+      U[i,] <- U[i,]/U[i,i] # rescale rows of U to get diagonal values as 1
+    }
+    v <- all(round(a,4) == round(L%*%D%*%U,4)) # check whether A = L%*%D%*%U, round to 4 decimal places
+    return(list('L' = L, 'D' = D, 'U' = U, 'Validation: A == L%*%D%*%U' = v))
+  }
+  else{
+    print('Error: Incorrect method.')
+  }
+}
+```
+
+
+
+
+
+b. Test the performance of the function `Matrix_Fct`. Create 100 random square matrices of number of rows between 1 and 100, and check the result of internal validation.
+
+(1) Method = `LU`
+```{r P2 Part2}
+n = 100
+
+result <- vector()
+
+for (i in 1:n){
+  m <- sample.int(n,1, replace = TRUE)
+  random_matrix <- matrix(c(rnorm(m^2)*n), nrow = m, byrow = TRUE)
+  result <- append(result, Matrix_Fct(random_matrix)$`Validation: A == L%*%U`)
+}
+
+
+all(result)
+```
+
+(2) Method = `LDU`
+```{r P2 Part3}
+n = 100
+
+result <- vector()
+
+for (i in 1:n){
+  m <- sample.int(n,1, replace = TRUE)
+  random_matrix <- matrix(c(rnorm(m^2)*n), nrow = m, byrow = TRUE)
+  result <- append(result, Matrix_Fct(random_matrix, method = 'LDU')$`Validation: A == L%*%D%*%U`)
+}
+
+
+all(result)
+```
+
+
+c. Create a 3x3 matrix A to demostrate the output of the function `Matrix_Fct`
+(1) Method = `LU`
+```{r P2 Part 4}
+A <- matrix(c(1,1,3,2,-1,5,-1,-2,4), nrow = 3, byrow = TRUE)
+A
+Matrix_Fct(A)
+```
+
+(2) Method = `LDU`
+```{r P2 Part 5}
+Matrix_Fct(A, method = 'LDU')
+```
+
+
