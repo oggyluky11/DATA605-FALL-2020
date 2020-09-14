@@ -1,0 +1,234 @@
+---
+title: "DATA605 ASSIGNMENT 3"
+author: "Fan Xu"
+date: "09/10/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+```
+
+Please refer to the [Assignment 3 Document](https://github.com/shirley-wong/Data-605/blob/master/Assignment3/hw3.pdf).
+
+```{r libraries, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(matlib)
+library(Matrix)
+```
+
+# Problem Set 1
+
+## Question 1
+**What is the rank of the matrix $A$?**
+
+$A = \begin{bmatrix} 1 & 2 & 3 & 4\\ -1 & 0 & 1 & 3\\ 0 & 1 & -2 & 1\\ 5 & 4 & -2 & -3\end{bmatrix}$
+
+**Answer:**
+
+The rank of a matrix is defined as the maximum number of linearly independent column vectors or that of linearly independent row vectors in the matrix, whichever is smaller. Equivalently, it is the number of pivots in the reduced echelon form of the matrix. From the result of the code trunk below, the rank of matrix $A$ is 4.
+
+
+```{r PS1 Q1}
+A <- matrix(c(1,2,3,4,-1,0,1,3,0,1,-2,1,5,4,-2,-3), nrow=4, ncol=4, byrow=TRUE)
+Zero_V <- rep(0, ncol(A))
+
+Rank_A <- A %>%
+  
+  #get the reduced echelon form of matrix A
+  matlib::echelon(.,Zero_V,reduced = TRUE) %>%
+  
+  #get the diagonals of RREF of matrix A
+  diag() %>%
+  
+  #filter out zeros
+  .[which(.!=0)] %>%
+  
+  #count number of non zero diagonals
+  length()
+
+Rank_A
+```
+
+<br><br>
+
+
+
+## Question 2
+**Given an $m \times n$ matrix where $m>n$, what can be the maximum rank? The minimum rank, assuming that the matrix is non-zero?**
+
+**Answer:**
+
+The rank of a matrix is defined as the maximum number of linearly independent column vectors or that of linearly independent row vectors in the matrix, whichever is smaller. Equivalently, it is the number of pivots in the reduced echelon form of the matrix.
+
+According to the above definition, given an $m \times n$ matrix where $m>n$ and with non-zero entries, the maximum rank is n and the minimum rank is 1. Because when $m>n$, there are at most n pivots and at least 1 pivot in the matrix, depends on the number of linearly independent column vectors. If all n column vectors are linearly independent, the number of pivots achieve maximum n, and so is the rank. On the other hand, the matrix may contain at least one linear independent column, in such case there will be only 1 pivot in the matrix, and so the minimum rank is 1. 
+<br><br>
+
+
+## Question 3
+**What is the rank of matrix $B$?**
+
+$B = \begin{bmatrix} 1 & 2 & 1\\ 3 & 6 & 3\\ 2 & 4 & 2\end{bmatrix}$
+
+
+
+**Answer:** 
+It can be observed that R2 = R1+R3, therefore there is only one linearly independent row vector in the matrix. Using the same approach in question 1, as shown in the result of the code trunk below, the rank of matrix $B$ is 1.
+
+```{r PS1 Q3}
+B <- matrix(c(1,2,1,3,6,3,2,4,2), nrow=3, ncol=3, byrow=TRUE)
+Zero_V <- rep(0, ncol(B))
+
+Rank_B <- B %>% 
+  
+  #get the reduced echelon form of matrix A
+  matlib::echelon(.,Zero_V,reduced = TRUE) %>%
+  
+  #get the diagonals of RREF of matrix A
+  diag() %>%
+  
+  #filter out zeros
+  .[which(.!=0)] %>%
+  
+  #count number of non zero diagonals
+  length()
+
+Rank_B
+```
+
+<br><br>
+
+
+# Problem Set 2
+
+Compute the eigenvalues and eigenvectors of the matrix A. You'll need to show your work. You'll need to write out the characteristic polynomial and show your solution.
+$A = \begin{bmatrix} 1 & 2 & 3\\ 0 & 4 & 5\\ 0 & 0 & 6\end{bmatrix}$
+
+Please show your work using an R-markdown document. Please name your assignment submission with your first initial and last name.
+
+**Answer:**
+
+## Part 1
+**Find the characteristic polynomial**
+
+Given $x$ is an eigenvector and $\lambda$ an eigenvalue of the $3x3$ matrix $A$, then $A\vec{x}=\lambda \vec{x}$ where $\vec{x} \neq 0$, and the characteristic polynomial can be obtained by solving for $\lambda$ of equation $det(\lambda I_{3} -A)=0$.
+
+$det(\lambda I_{3} -A)=det(\lambda\begin{bmatrix}1 & 0 & 0\\ 0 & 1 & 0\\ 0 & 0 & 1\end{bmatrix}\begin{bmatrix}1 & 2 & 3\\ 0 & 4 & 5\\ 0 & 0 & 6\end{bmatrix})$
+
+$=det(\begin{bmatrix}\lambda & 0 & 0\\ 0 & \lambda & 0\\ 0 & 0 & \lambda\end{bmatrix}\begin{bmatrix}1 & 2 & 3\\ 0 & 4 & 5\\ 0 & 0 & 6\end{bmatrix})$
+
+$=\begin{bmatrix} \lambda -1 & -2 & -3\\ 0 & \lambda -4 & -5\\ 0 & 0 & \lambda -6 \end{bmatrix}$
+
+$=(\lambda-6)\begin{bmatrix} \lambda -1 & -2\\0 & \lambda -4 \end{bmatrix}$
+
+$=(\lambda-6)(\lambda-1)(\lambda-4)$
+
+$= \lambda^{3} - 11\lambda^{2} +34\lambda -24$
+
+
+The characteristic polynomial of matrix $A$ is $p_{A}(x) = x^{3} - 11x^{2} +34x -24$.
+<br><br>
+
+
+## Part 2
+**Solve for eigenvalues**
+
+
+when $det(\lambda I_{3}-A) = 0$
+
+$(\lambda-1)(\lambda-4)(\lambda-6) = 0$
+
+$\lambda = \left\{\begin{matrix}1\\ 4\\ 6\end{matrix}\right.$ 
+
+Therefore, 1, 4 and 6 are the eigenvalues of matrix $A$.
+<br><br>
+
+
+
+## Part 3
+**Solve for eigenvectors**
+
+**When $\lambda=1$**, 
+
+the eigenspace $E_{\lambda=1}=N(\begin{bmatrix}1 & 0 & 0\\ 0 & 1 & 0\\ 0 & 0 & 1\end{bmatrix}-\begin{bmatrix} 1 & 2 & 3\\ 0 & 4 & 5\\ 0 & 0 & 6\end{bmatrix})$
+
+=$N(\begin{bmatrix} 0 & -2 & -3\\ 0 & -3 & -5\\ 0 & 0 & -5 \end{bmatrix})$
+
+so for eigenvetor $V_{\lambda=1}=\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}$, 
+
+$\begin{bmatrix} 0 & -2 & -3\\ 0 & -3 & -5\\ 0 & 0 & -5 \end{bmatrix}\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}=\begin{bmatrix}0\\ 0\\ 0\end{bmatrix}$
+
+$\rightarrow \begin{bmatrix} 0 & 1 & 0\\ 0 & 0 & 1\\ 0 & 0 & 0 \end{bmatrix}\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}=\begin{bmatrix}0\\ 0\\ 0\end{bmatrix}$
+
+$\rightarrow V_{1} = a$ for $a \in \mathbb{R}, V_{2} = 0$ and $V_{3} = 0$.
+
+Therefore, the eigenvetors for $\lambda=1$ are the eigenspace 
+$E_{\lambda=1}=\left \{ \begin{bmatrix}V_{1}\\V_{2} \\V_{3}\end{bmatrix}=a\begin{bmatrix}1\\0 \\0\end{bmatrix}\mid a\in \mathbb{R} \right \}$.
+<br><br>
+
+
+**When $\lambda=4$**, 
+
+the eigenspace $E_{\lambda=4}=N(\begin{bmatrix}4 & 0 & 0\\ 0 & 4 & 0\\ 0 & 0 & 4\end{bmatrix}-\begin{bmatrix} 1 & 2 & 3\\ 0 & 4 & 5\\ 0 & 0 & 6\end{bmatrix})$
+
+=$N(\begin{bmatrix} 3 & -2 & -3\\ 0 & 0 & -5\\ 0 & 0 & -2 \end{bmatrix})$
+
+so for eigenvetor $V_{\lambda=4}=\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}$, 
+
+$\begin{bmatrix} 3 & -2 & -3\\ 0 & 0 & -5\\ 0 & 0 & -2 \end{bmatrix}\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}=\begin{bmatrix}0\\ 0\\ 0\end{bmatrix}$
+
+$\rightarrow \begin{bmatrix} 1 & -2/3 & 0\\ 0 & 0 & 1\\ 0 & 0 & 0 \end{bmatrix}\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}=\begin{bmatrix}0\\ 0\\ 0\end{bmatrix}$
+
+$\rightarrow V_{1} = 2/3V_{2}, V_{3}=0$
+
+$\rightarrow V_{1} = a, V_{2} = 3/2a$  where $a \in \mathbb{R}$ and $V_{3} = 0$.
+
+Therefore, the eigenvetors for $\lambda=4$ are the eigenspace 
+$E_{\lambda=4}=\left \{ \begin{bmatrix}V_{1}\\V_{2} \\V_{3}\end{bmatrix}=a\begin{bmatrix}1\\3/2 \\0\end{bmatrix}\mid a\in \mathbb{R} \right \}$.
+<br><br>
+
+
+**When $\lambda=6$**, 
+
+the eigenspace $E_{\lambda=6}=N(\begin{bmatrix}6 & 0 & 0\\ 0 & 6 & 0\\ 0 & 0 & 6\end{bmatrix}-\begin{bmatrix} 1 & 2 & 3\\ 0 & 4 & 5\\ 0 & 0 & 6\end{bmatrix})$
+
+=$N(\begin{bmatrix} 5 & -2 & -3\\ 0 & 2 & -5\\ 0 & 0 & 0 \end{bmatrix})$
+
+so for eigenvetor $V_{\lambda=6}=\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}$, 
+
+$\begin{bmatrix} 5 & -2 & -3\\ 0 & 2 & -5\\ 0 & 0 & 0 \end{bmatrix}\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}=\begin{bmatrix}0\\ 0\\ 0\end{bmatrix}$
+
+$$\rightarrow \begin{bmatrix} 1 & 0 & -8/5\\ 0 & 1 & -5/2\\ 0 & 0 & 0 \end{bmatrix}\begin{bmatrix}V_{1}\\ V_{2}\\ V_{3}\end{bmatrix}=\begin{bmatrix}0\\ 0\\ 0\end{bmatrix}$$
+$\rightarrow V_{1} = 8/5V_{3}, V_{2}=5/2V_{3}$
+
+$\rightarrow V_{1} = 8/5a, V_{2} = 5/2a, V_{3} = a$ where $a \in \mathbb{R}$.
+
+Therefore, the eigenvetors for $\lambda=6$ are the eigenspace 
+$E_{\lambda=6}=\left \{ \begin{bmatrix}V_{1}\\V_{2} \\V_{3}\end{bmatrix}=a\begin{bmatrix}8/5\\5/2 \\1\end{bmatrix}\mid a\in \mathbb{R} \right \}$.
+
