@@ -1,0 +1,201 @@
+---
+title: "DATA605 ASSIGNMENT 4"
+author: "Fan Xu"
+date: "9/20/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+
+
+```
+
+# Problem set 1
+
+In this problem, we'll verify using R that SVD and Eigenvalues are related as worked out in the weekly module. Given a $3 \times 2$ matrix $A$
+$$A=\begin{bmatrix}1 & 2 & 3\\ -1 & 0 & 4\end{bmatrix}\qquad(1)$$
+
+write code in R to compute $X=AA^{T}$ and $Y=A^{T}A$. Then, compute the eigenvalues and eigenvectors of $X$ and $Y$ using the built-in commands in R.
+
+Then, compute the left-singular, singular values, and right-singular vectors of $A$ using the svd command. Examine the two sets of singular vectors and show that they are indeed eigenvectors of $X$ and $Y$. In addition, the two non-zero eigenvalues (the 3rd value will be very close to zero, if not zero) of both $X$ and $Y$ are the same and are squares of the non-zero singular values of $A$.
+
+Your code should compute all these vectors and scalars and store them in variables. Please add enough comments in your code to show me how to interpret your steps.
+
+**Answer:**
+
+## Step 1: Define Matrix $A$:
+
+Define variable $A=\begin{bmatrix}1 & 2 & 3\\ -1 & 0 & 4\end{bmatrix}$.
+```{r P1 S1}
+A = matrix(c(1,2,3,-1,0,4),nrow = 2, byrow = TRUE)
+
+print(list("Matrix A:"=A))
+
+```
+
+## Step 2: Compute $X=AA^{T}$
+```{r P1 S2}
+X <- A%*%t(A)
+
+print(list("Matrix X:"=X))
+```
+
+## Step 3: Compute $Y=A^{T}A$
+```{r P1 S3}
+Y <- t(A)%*%A
+
+print(list("Matrix Y:"=Y))
+```
+
+## Step 4: Compute eigenvalues & eigenvectors of $X$
+```{r P1 S4}
+eigen(X)
+
+```
+
+## Step 5: Compute eigenvalues & eigenvectors of $Y$
+```{r P1 S5}
+eigen(Y)
+
+```
+
+## Step 6: Compute SVD of $A$
+```{r P1 S6}
+svd(A, nu = nrow(A), nv = ncol(A))
+
+```
+## Step 7: Comparison
+
+**Examine the two sets of singular vector and show that they are indeed eigenvectors of X and Y.**
+
+Since for any eigen value $\lambda$, the eigenvector can be any vector that span the eigenspace $E_{\lambda}$. Therefore while the outputs of the singular vector of `svd(A)` and `eigen(X)` | `eigen(Y)` may appear different, however we will check whether they are a linear combination of another.
+
+(1) Get all singular vectors of matrix $A$ and all eigenvectors of $X$ and $Y$.
+```{r P1 S7 1}
+U <- svd(A, nu = nrow(A), nv = ncol(A))$u
+V <- svd(A, nu = nrow(A), nv = ncol(A))$v
+X_sing_vec <- eigen(X)$vectors
+Y_sing_vec <- eigen(Y)$vectors
+
+```
+
+(2) Create a function to check whether each column vector in the singlar vectors of matrix $A$ is a linear combination of the respondent column vector in the eigenvectors of $X$ or $Y$.
+```{r p1 s7 2}
+check_if_eig_vec_identical <- function(sing_vec,eigen_vec){
+  result <- vector()
+  # check if there is a unique scalar of all elements in both column vector
+  for(i in 1:ncol(eigen_vec)){
+    s <- (round(eigen_vec[,i]/sing_vec[,i],0))  %>%
+      as.factor() %>%
+      unique() %>%
+      length()
+    #if a unique scalar exists, then on column vector is a linear combinaton of another
+    result <- ifelse(s==1, TRUE,FALSE)
+  }
+  description <- paste0('The singlular vectors of ',
+                       deparse(substitute(sing_vec)),
+                       ' and the eigenvectors of ',
+                       deparse(substitute(eigen_vec)))
+  return(ifelse(all(result) == TRUE,
+                paste0(description,' are the same.'),
+                paste0(description,' are different.')))
+}
+
+
+```
+
+(3) Check if singular vectors of $U$ and the eigenvectors of $X$ are the same.
+```{r}
+U
+X_sing_vec
+check_if_eig_vec_identical(U, X_sing_vec)
+
+```
+
+(4) Check if singular vectors of $V$ and the eigenvectors of $Y$ are the same.
+```{r}
+V
+Y_sing_vec
+check_if_eig_vec_identical(V, Y_sing_vec)
+
+```
+
+
+# Problem Set 2
+Using the procedure outlined in section 1 of the weekly handout, write a function to compute the inverse of a well-conditioned full-rank square matrix using co-factors. In order to compute the co-factors, you may use built-in commands to compute the determinant. Your function should have the following signature:
+
+**$B = myinverse(A)$**
+
+where A is a matrix and B is its inverse and $A\times B = I$. The off-diagonal elements of I should be close to zero, if not zero. Likewise, the diagonal elements should be close to 1, if not 1. Small numerical precision errors are acceptable but the function myinverse should be correct and must use co-factors and determinant of A to compute the inverse.
+
+Please submit PS1 and PS2 in an R-markdown document with your first initial and last name.
+
+## Part 1: Create function `myinverse`
+```{r}
+myinverse <- function(x){
+  #Error handler
+  stopifnot(det(x)!=0 | class(x)!='matrix' | nrow(x)!=ncol(x))
+  # Create co-factor matrix c
+  c <- x
+  for(i in 1:nrow(x)){
+    for(j in 1:ncol(x)){
+      #co-factors = (-1)^(i+j) * det(sub-matrices)
+      c[i,j] <- (-1)^(i+j)*det(matrix(x[-i,-j],nrow(x)-1, ncol(x)-1))
+    }
+  }
+  # return inv(x) = t(c)/det(x)
+  return(t(c)/det(x))
+}
+
+```
+
+
+## Part 2: Validation
+create a function to test the customized function `myinverse`
+```{r}
+check_myinverse <- function(n){
+  A = matrix(rnorm(n**2)*n, n,n)
+  return(list('Random Matrix A' = A,
+              'myinverse(A)' = myinverse(A),
+              'myinverse(A)%*%A' = round(myinverse(A)%*%A,10)))
+}
+```
+
+Test the function `myinverse` with a random matrix which has maximum of 10 columns
+```{r}
+check_myinverse(sample(1:10,1))
+
+```
+
+
