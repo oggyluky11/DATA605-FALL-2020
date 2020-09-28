@@ -1,0 +1,263 @@
+---
+title: "DATA605 ASSIGNMENT 5"
+author: "Fan Xu"
+date: "09/27/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+# Problem Set 1
+
+Choose independently two numbers B and C at random from the interval [0, 1] with uniform density. Prove that B and C are proper probability distributions.
+
+Note that the point (B,C) is then chosen at random in the unit square.
+
+Find the probability that
+
+(a) B+C < 1/2
+
+(b) BC < 1/2
+
+(c) |B-C| < 1/2
+
+(d) max{B,C} < 1/2
+
+(e) min{B,C} < 1/2
+
+
+**Answer:**
+
+
+## Proof
+**Prove that B and C are proper probability distributions.**
+
+**(1)**
+$\because$ B and C at chosen randomly from the interval [0, 1] with uniform density
+
+$\therefore$ The probability density function of B (or C) is $$f(x)=1 \;\;\;\;\;\; for \;\;0\leq x \leq 1$$
+
+$\therefore$ The cumulative distribution function is $$F(x) = \int_{0}^{x}f(x)dx=\int_{0}^{x}1dx= x |^{x}_{0} =x \;\;\;\;\;\; for\;\;\;\; 0\leq x \leq 1$$
+
+$\therefore$ $F(x = 1) = 1$, The sum of probability of all values of B (or C) equals 1, both B and C are proper probability distributions.
+
+<\br><\br>
+
+**(2)**
+$\because$ B and C are independently selected
+
+$\therefore$ the joint probability density function of B & C is $$f(x,y) = f(x)f(y) = 1\cdot1=1 \;\;\;\;\;\; for \;\;0\leq x\leq 1\;\; and \;\;0\leq y\leq 1$$
+
+$\therefore$ the joint cumulative distribution function is $$F(x,y) = \int_{0}^{x} \int_{0}^{y} 1dydx\;\;\;\;\;\; for \;\;0\leq x\leq 1\;\; and \;\;0\leq y\leq 1$$
+
+
+$\therefore$ $$F(x =1, y = 1) = \int_{0}^{1} \int_{0}^{1} 1dydx =\int_{0}^{1} \left[ y \right]^{1}_{0}dx=\int_{0}^{1}1dx=\left[ x \right]^{1}_{0}=1$$, the joint probability of B & C is a proper probability distribution.
+
+
+
+
+
+
+
+## Question 1(a)
+
+(a) B+C < 1/2
+
+
+### By Graph
+
+![Figure for Question 1a](https://github.com/oggyluky11/DATA605-FALL-2020/blob/master/Week5_HW/Question%201a.JPG?raw=true)
+
+Graph the line $X< \frac{1}{2}-Y$ on a graph, we have the shaded area within the unit square 
+$$=\frac{1}{2}\cdot\frac{1}{2}\cdot\frac{1}{2} =\frac{1}{8}$$
+
+### By Integration
+
+$$P(B+C<1/2)$$
+$$=P(0<x<\frac{1}{2}, 0<y<\frac{1}{2}-x)$$
+$$=\int_{0}^{1/2} \int_{0}^{1/2-x} f(x,y) dydx$$
+$$=\int_{0}^{1/2} \int_{0}^{1/2-x} 1dydx$$
+$$=\int_{0}^{1/2} [\frac{1}{2}-x]dx$$
+$$=\left[ \frac{x}{2}-\frac{x^{2}}{2} \right]^{1/2}_{0}$$
+$$=\frac{1}{4}-\frac{1}{8}$$
+$$=\frac{1}{8}$$
+
+### By Code
+
+```{r PS1 Q1}
+integrate((function(x){
+  integrate(function(y) {0*y+1},0,0.5-x)$value}) %>% 
+    Vectorize(),0,0.5)
+```
+
+
+
+## Question 1(b)
+
+(b) BC < 1/2
+
+### By Graph
+
+![Figure for Question 1bi](https://github.com/oggyluky11/DATA605-FALL-2020/blob/master/Week5_HW/Question%201bi.JPG?raw=true)
+
+![Figure for Question 1bii](https://github.com/oggyluky11/DATA605-FALL-2020/blob/master/Week5_HW/Question%201bii.JPG?raw=true)
+
+As the graph is a parabola, we cannot solve it by simple multiplication.
+
+### By Integration
+
+$$P(BC < \frac{1}{2})$$
+$$=P(xy < \frac{1}{2})$$
+$$=P(y < \frac{1}{2x})$$
+$$=\int_{0}^{1/2} \int_{0}^{1} 1 dydx + \int_{1/2}^{1} \int_{0}^{\frac{1}{2x}} 1 dydx $$
+
+$$=\frac{1}{2} + \int_{1/2}^{1} \frac{1}{2x} dx$$
+
+$$=\frac{1}{2} + \frac{1}{2}\cdot \left [ ln(x) \right ]^{1}_{1/2} $$
+$$=\frac{1}{2}  - \frac{1}{2} \cdot (ln(\frac{1}{2})) $$
+$$\approx 0.84657359$$
+
+### By Code
+
+```{r PS1 Q2}
+integrate((function(x){
+  integrate(function(y) {0*y+1},0,1)$value}) %>% 
+    Vectorize(),0,0.5)$value +
+integrate((function(x){
+  integrate(function(y) {0*y+1},0,1/(2*x))$value}) %>% 
+    Vectorize(),0.5,1)$value
+```
+
+
+
+## Question 1(c)
+
+(c) |B-C| < 1/2
+
+### By Graph
+
+![Figure for Question 1c](https://github.com/oggyluky11/DATA605-FALL-2020/blob/master/Week5_HW/Question%201c.JPG?raw=true)
+
+Graph the line $|x-y|<\frac{1}{2}$ on a graph, calculate the shaded area within the unit square as sum of two symmetric trapezoids
+$$=(\frac{1}{2}+1)\cdot\frac{1}{2}\cdot\frac{1}{2}\cdot2=\frac{3}{4}$$
+
+### By Integration
+
+$$P(\left | B-C \right | < \frac{1}{2})$$
+$$=P(-\frac{1}{2} < x-y < \frac{1}{2})$$
+$$=P((y<x+\frac{1}{2}) and (y>x-\frac{1}{2}))$$
+$$=\int_{0}^{1/2} \int_{0}^{x+1/2} 1 dydx + \int_{1/2}^{1} \int_{x-1/2}^{1} 1 dydx$$
+$$=\int_{0}^{1/2}(x+\frac{1}{2})dx + \int_{1/2}^{1}(\frac{3}{2}-x)dx$$
+$$=\left [ \frac{x^{2}}{2}+\frac{x}{2} \right ]^{1/2}_{0} + \left [ \frac{3x}{2} - \frac{x^{2}}{2} \right ]^{1}_{1/2}$$
+$$=(\frac{1}{8}+\frac{1}{4})-0+(\frac{3}{2}-\frac{1}{2})-(\frac{3}{4}-\frac{1}{8})$$
+$$=\frac{3}{4}$$
+
+### By Code
+
+```{r PS1 Q3}
+integrate((function(x){
+  integrate(function(y) {0*y+1},0,x+0.5)$value}) %>% 
+    Vectorize(),0,0.5)$value +
+integrate((function(x){
+  integrate(function(y) {0*y+1},x-0.5,1)$value}) %>% 
+    Vectorize(),0.5,1)$value
+```
+
+## Question 1(d)
+
+(d) max{B,C} < 1/2
+
+### By Graph
+
+![Figure for Question 1d](https://github.com/oggyluky11/DATA605-FALL-2020/blob/master/Week5_HW/Question%201d.JPG?raw=true)
+
+Graph the line $max\left\{B,C\right\}<\frac{1}{2}$ on a graph, calculate the shaded area within the unit square
+$$=\frac{1}{2}\cdot\frac{1}{2}=\frac{1}{4}$$
+
+### By Integration
+
+$$P(max\left\{B,C\right\}<\frac{1}{2})$$
+$$=P(max\left\{x,y\right\}<\frac{1}{2})$$
+$$=P((0<x<\frac{1}{2}) and (0<y<\frac{1}{2}))$$
+$$\int_{0}^{1/2}\int_{0}^{1/2} 1 \;dy\,dx$$
+$$=\frac{1}{2} \cdot \frac{1}{2}$$
+$$=\frac{1}{4}$$
+
+### By Code
+
+```{r PS1 Q4}
+integrate((function(x){
+  integrate(function(y) {0*y+1},0,0.5)$value}) %>% 
+    Vectorize(),0,0.5)$value
+```
+
+
+
+## Question 1(e)
+
+(e) min{B,C} < 1/2
+
+### By Graph
+
+![Figure for Question 1e](https://github.com/oggyluky11/DATA605-FALL-2020/blob/master/Week5_HW/Question%201e.JPG?raw=true)
+
+Graph the line $min\left\{B,C\right\}<\frac{1}{2}$ on a graph, calculate the shaded area within the unit square
+$$=1-\frac{1}{2}\cdot\frac{1}{2}=\frac{3}{4}$$
+
+### By Integration
+
+$$P(min\left\{B,C\right\}<\frac{1}{2})$$
+$$=P(min\left\{x,y\right\}<\frac{1}{2})$$
+$$=P((x<\frac{1}{2})or(y<\frac{1}{2}))$$
+$$=\int_{0}^{1/2}\int_{0}^{1} 1dydx + \int_{1/2}^{1}\int_{0}^{1/2}1dydx$$
+$$=\frac{1}{2} + \frac{1}{4}$$
+$$=\frac{3}{4}$$
+
+### By Code
+
+```{r PS1 Q5}
+integrate((function(x){
+  integrate(function(y) {0*y+1},0,1)$value}) %>% 
+    Vectorize(),0,0.5)$value +
+integrate((function(x){
+  integrate(function(y) {0*y+1},0,0.5)$value}) %>% 
+    Vectorize(),0.5,1)$value
+```
+
+
+## Reference
+
+Graphing Tool: https://www.mathway.com/Algebra
