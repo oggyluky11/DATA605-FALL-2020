@@ -1,0 +1,312 @@
+---
+title: "DATA605 ASSIGNMENT 6"
+author: "Fan Xu"
+date: "10/04/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+# Problem Set 1
+
+A box contains 54 red marbles, 9 white marbles, and 75 blue marbles. If a marble is randomly selected from the box,
+what is the probability that it is red or blue? Express your answer as a fraction or a decimal number rounded to four
+decimal places.
+
+## Answer
+
+As getting one red or one blue marble randomly is mutually exclusive, $P(red \cup blue) = P(red) + P(blue)$
+
+$$P(getting\;red\;or\;blue)$$
+$$=P(red \cup blue) =P(red) + P(blue)$$
+$$=\frac{54}{54+9+75} + \frac{75}{54+9+75}$$
+$$=\frac{129}{138}$$
+$$=\frac{43}{46}$$
+
+# Problem Set 2
+
+You are going to play mini golf. A ball machine that contains 19 green golf balls, 20 red golf balls, 24 blue golf balls, 
+and 17 yellow golf balls, randomly gives you your ball. What is the probability that you end up with a red golf ball? 
+Express your answer as a simplified fraction or a decimal rounded to four decimal places.
+
+## Answer
+
+$$P(getting\;red\;golf\;ball)$$
+$$=\frac{\#of\;red\;balls}{Total\;\#\;of\;balls}$$
+$$=\frac{20}{19+20+24+17}$$
+$$=\frac{20}{80}$$
+$$=\frac{1}{4}$$
+
+# Problem Set 3
+A pizza delivery company classifies its customers by gender and location of residence. The research department has
+gathered data from a random sample of 1399 customers. The data is summarized in the table below.
+
+| Gender and Residence of Customers |       |         |
+|-----------------------------------|-------|---------|
+|                                   | Males | Females |
+| Apartment                         | 81    | 228     |
+| Dorm                              | 116   | 79      |
+| With Parent(s)                    | 215   | 252     |
+| Sorority/Fraternity House         | 130   | 97      |
+| Other                             | 129   | 72      |
+
+What is the probability that a customer is not male or does not live with parents? Write your answer as a fraction or a
+decimal number rounded to four decimal places.
+
+## Answer
+
+P(not male or does not live with parents) = P(not(male and live with parents)) = 1 - P(male and live with parents)
+$$=1-\frac{215}{1399}$$
+$$\frac{1184}{1399}$$
+
+# Problem Set 4
+
+Determine if the following events are independent: 1) Going to the gym, 2) Losing weight.
+
+Choices: A) Dependent B) Independent
+
+## Answer
+
+$\because$ Going to the gym and losing weight has a causal relationship.
+
+$\therefore$ My answer is A, dependent. 
+
+# Problem Set 5
+
+A veggie wrap at City Subs is composed of 3 different vegetables and 3 different condiments wrapped up in a tortilla. If
+there are 8 vegetables, 7 condiments, and 3 types of tortilla available, how many different veggie wraps can be made?
+
+## Answer
+
+Using the combination rule, the number of ways $=8C3 \times 7C3 \times 3C1 =56 \times 35 \times 3 =5880$
+
+# Problem Set 6
+
+Determine if the following events are independent: 1) Jeff runs out of gas on the way to work, 2) Liz watches the evening news.
+
+Choices: A) Dependent B) Independent
+
+## Answer
+
+$\because$ The two events do not have a causal relationship.
+
+$\therefore$ My answer is B, independent.
+
+# Problem Set 7
+
+The newly elected president needs to decide the remaining 8 spots available in the cabinet he/she is appointing. If there
+are 14 eligible candidates for these positions (where rank matters), how many different ways can the members of the
+cabinet be appointed?
+
+## Answer
+
+$\because$ Rank of the 8 spots matters,
+
+$\therefore$ Using permutation rule, the number of ways $=14P8 =121,080,960$
+
+# Problem Set 8
+
+A bag contains 9 red, 4 orange, and 9 green jellybeans. What is the probability of reaching into the bag and randomly
+withdrawing 4 jellybeans such that the number of red ones is 0, the number of orange ones is 1, and the number of green
+ones is 3? Write your answer as a fraction or a decimal number rounded to four decimal places.
+
+## Answer
+
+Total number of jellybeans $=9+4+9=22$
+
+Using combination rule,
+
+$$P(given\;event) = \frac{\#\;of\;ways\;of\;getting\;the\;given\;event}{\#\;of\;ways\;getting\;any\;4\;jellybeans}$$
+
+$$=\frac{9C0 \times 4C1 \times 9C3}{22C4}$$
+
+$$=\frac{1\times4\times84}{7315}$$
+
+$$=\frac{48}{1045}$$
+
+# Problem Set 9
+
+Evaluate the following expression: $\frac{11!}{7!}$
+
+## Answer
+
+By definition, $n!=n\times(n-1)\times(n-2)\times\cdots\times3\times2\times1$ and $0!=1$.
+
+$$\therefore \frac{11!}{7!} = \frac{11\times10\times9\times\cdots\times3\times2\times1}{7\times6\times5\times4\times3\times2\times1}$$
+$$=11\times10\times9\times8$$
+$$=7920$$
+
+# Problem Set 10
+
+Describe the complement of the given event: 67% of subscribers to a fitness magazine are over the age of 34.
+
+## Answer
+
+The complement of the given event is 33% of subscribers to a fitness magazine are below or at the age of 34.
+
+# Problem Set 11
+
+If you throw exactly three heads in four tosses of a coin you win \$97. If not, you pay me \$30.
+
+Step 1. Find the expected value of the proposition. Round your answer to two decimal places.
+
+Step 2. If you played this game 559 times how much would you expect to win or lose? (Losses must be entered as
+negative.)
+
+## Step 1 Answer
+
+Note: Exactly three heads in four tosses = Exactly one tail in four tosses
+
+The expected value of the proposition $=(\frac{1}{2})^{4}\times C^{4}_{1}\times97+(1-\frac{1}{2^{4}}\times C^{4}_{1})\times(-30)$
+$$=\frac{1}{16}\times4\times97+(1-\frac{1}{16}\times4)\times(-30)$$
+$$=\frac{97}{4}-\frac{90}{4}$$
+$$=1.75$$
+
+## Step 2 Answer
+
+The expected value of paying this game 559 times would be $\$1.75 \times 559 =\$978.25$
+
+# Problem Set 12
+
+
+Flip a coin 9 times. If you get 4 tails or less, I will pay you $23. Otherwise you pay me $26.
+
+Step 1. Find the expected value of the proposition. Round your answer to two decimal places.
+
+Step 2. If you played this game 994 times how much would you expect to win or lose? (Losses must be entered as
+negative.)
+
+## Step 1 Answer
+
+Getting 4 tails or less is the same as choosing 4 tails or less from the 9 coins.
+
+Thus, the probability of getting 4 tails or less $=\frac{9C4+9C3+9C2+9C1+9C0}{2^{9}}=\frac{126+84+36+9+1}{512}=\frac{1}{2}$
+
+$\therefore$ The expected value of the proposition $=\frac{1}{2}\times23+(1-\frac{1}{2})\times(-26)=11.5-13=-\$1.5$
+
+## Step 2 Answer
+
+The expected value of paying this game 994 times would be $-\$1.5 \times 994 =-\$1491$
+
+$\therefore$ I would expect to lose $1,491.
+
+# Problem Set 13
+
+The sensitivity and specificity of the polygraph has been a subject of study and debate for years. A 2001 study of the
+use of polygraph for screening purposes suggested that the probability of detecting a liar was .59 (sensitivity) and that
+the probability of detecting a "truth teller" was .90 (specificity). We estimate that about 20% of individuals selected for
+the screening polygraph will lie.
+
+a. What is the probability that an individual is actually a liar given that the polygraph detected him/her as such? (Show
+me the table or the formulaic solution or both.)
+
+b. What is the probability that an individual is actually a truth-teller given that the polygraph detected him/her as
+such? (Show me the table or the formulaic solution or both.)
+
+c. What is the probability that a randomly selected individual is either a liar or was identified as a liar by the
+polygraph? Be sure to write the probability statement.
+
+## Answer
+
+By definition and given information,
+
+1) sensitivity = True Positive / (True Positive + False Negative) = 0.59
+
+2) Specificity = True Negative / (True Negative + False Positive) = 0.90
+
+3) Total percentage of people would truly lie = 0.20
+
+|                      | Liar_Actual    | Truth_Teller_Actual | Total   |
+|----------------------|----------------|---------------------|---------|
+| Liar_Predict         | True Positive  | False Positive      | TP+FP   |
+| Truth_Teller_Predict | False Negative | True Negative       | FN+TN   |
+| Total                | TP+FN = 0.2    | FP+TN = 1-0.2 = 0.8 | ALL = 1 |
+
+
+By using the 3 information and table listed above, I have 
+
+- True Positive $=0.59\times0.2=0.118$
+
+- True Negative $=0.9\times(1-0.2)=0.72$
+
+- False Negative $=0.2-0.118=0.082$
+
+- False Positive $=0.8-0.72=0.08$
+
+- TP+FP $=0.118+0.08=0.198$
+
+- FN+TN $=0.082+0.72=0.802$
+
+
+**Part a.**
+
+P(an individual is actually a liar given that the polygraph detected him/her as such)
+
+$=$P(actual liar | Predicted as liar)
+
+$=$P(actual liar and predicted as liar) / P(Predicted as liar)
+
+$=$TP/(TP+FP)
+
+$=\frac{0.118}{0.118+0.08}$
+
+$=\frac{59}{99}$
+
+**Part b.**
+
+P(an individual is actually a truth-teller given that the polygraph detected him/her as such)
+
+$=$P(actual truth-teller | Predicted as truth-teller)
+
+$=$P(actual truth-teller and predicted as truth-teller) / P(Predicted as truth-teller)
+
+$=$TN/(FN+TN)
+
+$=\frac{0.72}{0.802}$
+
+$=\frac{360}{401}$
+
+**Part c.**
+
+P(an individual is either a liar or was identified as a liar by the polygraph)
+
+$=$P(actual liar or predicted as liar)
+
+$=TP+FN+FP$
+
+$=0.118+0.082+0.08$
+
+$=0.28$
