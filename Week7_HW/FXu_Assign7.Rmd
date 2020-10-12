@@ -1,0 +1,208 @@
+---
+title: "DATA605 ASSIGNMENT 7"
+author: "Fan Xu"
+date: "10/11/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load library, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+
+```
+
+# Question 1
+Let X1, X2, . . . , Xn be n mutually independent random variables, each of
+which is uniformly distributed on the integers from 1 to k. Let Y denote the
+minimum of the Xi’s. Find the distribution of Y .
+
+
+**Answer:**
+
+$\because x_{i}$ is uniformly distrubted on the intergers from 1 to k
+
+$\therefore$ the pdf of $x_{i} $ is $P(X=x_{i}) = \frac{1}{k}$
+
+$\because x_{i}'s$ are mutually independtent from each other
+
+$\therefore$ the joint pdf of $P(All(X_{i}) > x) = P(x_{1} > x,x_{2} > x,...,x_{n} > x \;for\;x\;in\;range\;(1,k)) = (1-\frac{x}{k})^n$
+
+$\therefore P(Min(x_{i})=1) = P(Y = 1) = 1-P(All(X_{i}) > 1)=1-(1-\frac{1}{k})^n=(1-\frac{0}{k})^n-(1-\frac{1}{k})^n$
+
+$\therefore P(Y = 2) = 1-P(All(X_{i}) > 2) - P(Y = 1)=(1-\frac{1}{k})^n-(1-\frac{2}{k})^n$
+
+$\therefore P(Y = 3) = 1-P(All(X_{i}) > 3) - P(Y = 1) - P(Y = 2)=(1-\frac{2}{k})^n-(1-\frac{3}{k})^n$
+
+$...$
+
+$\therefore P(Y = y) = 1-P(All(X_{i}) > y) - P(Y = j\;for\;j < y)=(1-\frac{y-1}{k})^n-(1-\frac{y}{k})^n$
+
+$\therefore P(Y = y) = (\frac{k-y+1}{k})^n-(\frac{k-y}{k})^n$
+
+
+# Question 2
+
+Your organization owns a copier (future lawyers, etc.) or MRI (future doctors). This machine has a manufacturer’s expected lifetime of 10 years. This means that we expect one failure every ten years. (Include the probability statements and R Code for each part.).
+
+
+## Part a
+What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a geometric. (Hint: the probability is equivalent to not failing during the first 8 years..)
+
+**Answer:**
+
+Modeling using geometric distirbution, the probability that the machine will fail after 8 years is equivalent to it will not fail in the first 8 year, therefore
+
+$P(X = n) = (1-p)^{n-1}p$ where $p = \frac{1}{10}$
+
+and $P(X > 8) = 1 - P(X \leq 8)$
+
+compute in R
+
+1. $P(x > 8)$
+```{r geom P(x>8)}
+p=1/10
+1-pgeom(8-1,p)
+```
+
+2. $E[x] = \frac{1}{p}$
+```{r geom E[x]}
+1/p
+
+```
+
+3. $SD(x)=\sqrt{\frac{1-p}{p^2}}$
+```{r geom var(x)}
+sqrt((1-p)/p^2)
+
+```
+
+## Part b
+What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as an exponential.
+
+**Answer:**
+
+Modeling using exponential distirbution, the probability that the machine will fail after 8 years is equivalent to it will not fail in the first 8 year, therefore
+
+$P(X <= n) = 1-e^{-\lambda x}$ where $\lambda = 1/10$
+
+and $P(X > 8) = 1 - P(X \leq 8)$
+
+compute in R
+
+1. $P(x > 8)$
+```{r exp P(x>8)}
+lambda <- 1/10
+1-pexp(8, lambda)
+
+
+```
+
+2. $E[x] = \frac{1}{\lambda}$
+```{r exp E[x]}
+1/lambda
+```
+
+
+3. $SD(x) = \sqrt{\frac{1}{\lambda^2}}$
+```{r exp var(x)}
+sqrt(1/lambda^2)
+```
+
+## Part c
+
+What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8 years)
+
+
+Modeling using binomial distirbution, the probability that the machine will fail after 8 years is equivalent to it fail 0 times in the first 8 year, therefore
+
+$P(X = n) = \begin{pmatrix}n\\ x\end{pmatrix}p^x(1-p)^{n-x}$ where $p = \frac{1}{10}\;and\;n=8$
+
+and $P(x) = \begin{pmatrix}8\\ 0\end{pmatrix}(\frac{1}{10})^0(\frac{9}{10})^{8}$
+
+compute in R
+
+1.$P(x=0)\;given\;p=\frac{1}{10}\;and\;n=8$
+```{r binom}
+p <- 1/10
+n <- 8
+pbinom(0,n,p)
+
+
+```
+
+2. $E[x] = np$
+```{r Binom E[x]}
+n*p
+
+
+```
+
+3. $SD[x]=\sqrt{np(1-p)}$
+```{r Binom var(x)}
+sqrt(n*p*(1-p))
+
+```
+
+
+## Part d
+What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a Poisson.
+
+
+Modeling using Poisson distirbution, the probability that the machine will fail after 8 years is equivalent to it will fail zero times in the first 8 year, therefore
+
+for 1 year, $P(X = n) = \frac{\lambda^{x}e^{-\lambda}}{x!}$ where $\lambda = 1/10$, and 
+
+for 8 year, $P(X = n) = \frac{\lambda^{x}e^{-\lambda}}{x!}$ where $\lambda = 8/10$ 
+
+
+compute in R
+
+1.$P(x=0)\;given\;\lambda=\frac{8}{10}$
+```{r pois}
+lambda = 8/10
+ppois(0,lambda)
+
+
+```
+
+2.$E[x] = \lambda$ 
+```{r pois E[x]}
+lambda
+```
+
+
+3.$SD[x] = \sqrt{\lambda}$ 
+```{r pois var(x)}
+sqrt(lambda)
+```
