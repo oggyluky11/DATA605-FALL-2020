@@ -1,0 +1,155 @@
+---
+title: "DATA605 ASSIGNMENT 8"
+author: "Fan Xu"
+date: "10/18/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load library, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+
+```
+
+# Question 11 (Pg 303)
+
+**A company buys 100 lightbulbs, each of which has an exponential lifetime of 1000 hours. What is the expected time for the first of these bulbs to burn out? (See Exercise 10.)**
+
+
+**Answer:**
+
+$Let \;\lambda=\frac{1}{1000}\;,n=100\;and\;X_{min}=m$
+
+$\because P(X_{min}=m)=1-P(X_{i}>=m\;for\;i\in [1,100])$ <br>
+$=1-(e^{-\lambda m})^n)$ <br>
+$=1-e^{-\frac{100}{1000}m}$ <br>
+$=1-e^{-\frac{1}{10}m}$
+
+$\therefore E[m] = \frac{1}{\frac{1}{10}}=10$
+
+
+
+# Question 1 (Pg 320-321)
+
+**Let X be a continuous random variable with mean μ = 10 and variance $\sigma^{2} = \frac{100}{3}$. Using Chebyshev’s Inequality, find an upper bound for the following probabilities.**
+
+**Answer**
+Let $\mu = 10\;and\;\sigma=\sqrt\frac{100}{3}$,
+
+and according to Chebyshev's Inqeuqlity, $P(\left | X-\mu \right |\geq k\sigma)\leq\frac{1}{K^{2}}$
+
+
+## (a) 
+**$P(\left | X-10 \right |\geq2).$**
+
+$\because k=\frac{2}{\sigma}\;and\;k^{2}=\frac{4}{\sigma^{2}}=\frac{4}{\frac{100}{3}}=\frac{3}{25}$
+
+$\therefore P(\left | X-10 \right |\geq2)\leq min(\frac{1}{k^{2}},1)= min(\frac{25}{3},1)=1$
+
+$\therefore P(\left | X-10 \right |\geq2)\leq 1$
+
+
+## (b) 
+**$P(\left | X-10 \right |\geq5).$**
+
+$\because k=\frac{5}{\sigma}\;and\;k^{2}=\frac{25}{\sigma^{2}}=\frac{25}{\frac{100}{3}}=\frac{3}{4}$
+
+$\therefore P(\left | X-10 \right |\geq5)\leq min(\frac{1}{k^{2}},1)= min(\frac{4}{3},1)=1$
+
+$\therefore P(\left | X-10 \right |\geq5)\leq 1$
+
+## (c) 
+**$P(\left | X-10 \right |\geq9).$**
+
+$\because k=\frac{9}{\sigma}\;and\;k^{2}=\frac{81}{\sigma^{2}}=\frac{81}{\frac{100}{3}}=\frac{243}{100}$
+
+$\therefore P(\left | X-10 \right |\geq9)\leq min(\frac{1}{k^{2}},1)= min(\frac{100}{243},1)=\frac{100}{243}$
+
+$\therefore P(\left | X-10 \right |\geq9)\leq \frac{100}{243}\approx0.411523$
+
+## (d) 
+**$P(\left | X-10 \right |\geq20).$**
+
+$\because k=\frac{20}{\sigma}\;and\;k^{2}=\frac{400}{\sigma^{2}}=\frac{400}{\frac{100}{3}}=12$
+
+$\therefore P(\left | X-10 \right |\geq20)\leq min(\frac{1}{k^{2}},1)= min(\frac{1}{12},1)=\frac{1}{212}$
+
+$\therefore P(\left | X-10 \right |\geq20)\leq \frac{1}{12}\approx0.083333$
+
+
+# Question 14 (Pg 303)
+
+***14 Assume that X1 and X2 are independent random variables, each having an exponential density with parameter $\lambda$. Show that Z = X1 − X2 has density**
+
+$$f_{Z}(z)=(\frac{1}{2}\lambda e^{-\lambda\left | z \right |})$$
+
+**Answer**
+
+Let $$f_{X_{i}}(x)=\left\{\begin{matrix}\lambda e^{-\lambda x}\;\;\;\;\;\;x>0\\ 0\;\;\;\;\;\;\;otherwise\end{matrix}\right.\;\;\;\;for\;i\in[1,2]$$
+
+then let $x_{1}=x$ and $x_{1}=y$
+for $z = x_{1}-x_{2} = x-y$, then $y=x-z$
+
+$f_{Z}(z)=\int_{-\infty}^{\infty}f_{Y}(x-z)f_{X}(x)dx$
+
+for $z\geq0$ <br>
+$\because x-z>0$ <br>
+$\therefore x>z$
+
+$f_{Z}(z)=\int_{z}^{\infty}\lambda e^{-\lambda (x-z)}\lambda e^{-\lambda x}dx$ <br>
+$=\int_{z}^{\infty}\lambda^{2}e^{-\lambda(2x-z)}dx$ <br>
+$=\lambda^{2}e^{\lambda z}\int_{z}^{\infty}e^{-2\lambda x}dx$ <br>
+$=\lambda^{2}e^{\lambda z}\frac{1}{-2\lambda}(e^{-2\lambda\infty}-e^{-2\lambda z})$ <br>
+$=-\frac{1}{2}\lambda e^{\lambda z}(-e^{-2\lambda z})$ <br>
+$$=\frac{1}{2}\lambda e^{-\lambda z}$$
+
+for $z<0$ <br>
+$\because x-z>0$ <br>
+$\therefore x>0>z$ <br>
+$\therefore x>0$
+
+$f_{Z}(z)=\int_{0}^{\infty}\lambda e^{-\lambda (x-z)}\lambda e^{-\lambda x}dx=$ <br>
+$=\int_{0}^{\infty}\lambda^{2}e^{-\lambda(2x-z)}dx$ <br>
+$=\lambda^{2}e^{\lambda z}\int_{0}^{\infty}e^{-2\lambda x}dx$ <br>
+$=\lambda^{2}e^{\lambda z}\frac{1}{-2\lambda}(e^{-2\lambda\infty}-e^{-2\lambda 0})$ <br>
+$=\lambda^{2}e^{\lambda z}\frac{1}{-2\lambda}(0-1)$ <br>
+$$=\frac{1}{2}\lambda e^{\lambda z}$$
+
+\therefore
+
+$$f_{Z}(z)=\left\{\begin{matrix}\frac{1}{2}\lambda e^{-\lambda z}\;\;\;\;\;\;z\geq0\\ \frac{1}{2}\lambda e^{\lambda z}\;\;\;\;\;\;\;z<0\end{matrix}\right.$$
+
+In short:
+
+$$f_{Z}(z)=\frac{1}{2}\lambda e^{-\lambda\left | z \right |}$$
