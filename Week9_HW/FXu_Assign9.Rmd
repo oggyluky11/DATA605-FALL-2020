@@ -1,0 +1,187 @@
+---
+title: "DATA605 ASSIGNMENT 9"
+author: "Fan Xu"
+date: "10/25/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load library, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+
+```
+
+# Question 1
+
+**Textbook Question 11 (Pg 364)**
+
+**The price of one share of stock in the Pilsdorff Beer Company (see Exercise 8.2.12) is given by $Y_{n}$ on the nth day of the year. Finn observers that the differences $X_{n}=Y_{n+1}-Y_{n}$ appear to be independent random variables with a common distribution having mean $\mu=0$ and variance $\sigma^{2}=\frac{1}{4}$. If $Y_{1}=100$, estimate the probatility that $Y_{365}$ is**
+
+
+**Answer:**
+
+$\because X_{n}=Y_{n+1}-Y_{n}$ are independent random variables with a common distirbution having $\mu=0$ and $\sigma^{2}=\frac{1}{4}$
+
+$\therefore:$
+
+$Y_{n} = Y_{n-1}+X_{n-1}$
+
+$Y_{n-1} = Y_{n-2}+X_{n-2}$
+
+$Y_{n-2} = Y_{n-3}+X_{n-3}$
+
+...
+
+$Let\;S_{n} = X_{1}+X_{2}+...+X_{n}$
+
+$\therefore Y_{n} = Y_{1}+\sum_{i=1}^{n-1}x_{i}=Y_{1}+S_{n-1}$
+
+$\therefore E[S_{n-1}] = (n-1)\mu$ and $\sigma_{S_{n-1}}=\sigma\sqrt{(n-1)}$
+
+$\therefore E[S_{364}]=(365-1)0=0$, and $\sigma_{S_{364}}=\sqrt{\frac{1}{4}\times(365-1)}=\sqrt{\frac{364}{4}}$
+
+
+
+(a) $\geq100$.
+
+$P(Y_{365} \geq 100)=P(Y_{1}+S_{n-1} \geq 100)=P(S_{n-1}\geq0)=P(Z_{S_{n-1}}\geq\frac{0-0}{\sqrt{\frac{364}{4}}})=\Phi (-0)=0.5$
+
+
+```{r}
+# sigma
+sigma <- sqrt(364/4)
+
+# mu
+mu <- 0
+
+# Z-value
+q <- 0/sigma
+
+pnorm(q, mean = mu, sd = sigma, lower.tail = FALSE)
+
+
+```
+
+(b) $\geq110$.
+
+
+$P(Y_{365} \geq 110)=P(S_{n-1}\geq10)=P(Z_{S_{n-1}}\geq\frac{10-0}{\sqrt{\frac{364}{4}}})=\Phi (-\frac{10}{\sqrt{\frac{364}{4}}})=0.1472537$
+```{r}
+# sigma
+sigma <- sqrt(364/4)
+
+# q
+q <- 10/sigma
+
+pnorm(q, lower.tail = FALSE)
+
+
+```
+
+(c) $\geq120$.
+
+$P(Y_{365} \geq 120)=P(S_{n-1}\geq20)=P(Z_{X_{n-1}}\geq\frac{20-0}{\sqrt{\frac{364}{4}}})=\Phi (-\frac{20}{\sqrt{\frac{364}{4}}})=0.01801584$
+```{r}
+# sigma
+sigma <- sqrt(364/4)
+
+# q
+q <- 20/sigma
+
+pnorm(q, lower.tail = FALSE)
+
+
+```
+
+
+
+# Question 2
+
+**Calculate the expected value and variance of the binomial distribution using the moment generating function.**
+
+**Answer:**
+
+Let $P(X = x|n,p)=\binom{n}{x}p^{x}q^{n-x}\;where\;q=1-p\;and\;g(x)=e^{tx}$
+
+$\because M_x(t) = \sum_{x=0}^{n}g(x)P_{X}(x)$
+
+$=\sum_{x=0}^{n}e^{tx}\binom{n}{x}p^{x}q^{n-x}$
+
+$=\sum_{x=0}^{n}\binom{n}{x}(pe^{t})^{x}q^{n-x}$
+
+$=(q+pe^{t})^n$
+
+$and\;M_{x}^{'}(t) = n(q+pe^{t})^{n-1}pe^{t}$
+
+$=npe^{t}(q+pe^t)^{n-1}$
+
+$and\;M_{x}^{"}(t) = npe^{t}[(n-1)(q+pe^{t})^{n-2}pe^{t}]+(q+pe^{t})^{n-1}[npe^{t}]$
+
+$=npe^{t}(q+pe^{t})^{n-2}(q+npe^{t})$
+
+$\therefore E[x]=M_{x}^{'}(0)=n(q+pe^{0})^{n-1}pe^{0}=np$
+
+$and\;E[x^{2}] = M_{x}^{"}(0)=npe^{0}(q+pe^{0})^{n-2}(q+npe^{0})=np(q+np)$
+
+$\therefore Var(x) = E[X^2]-(E[x]^2) = np(q+np) - (np)^2=npq\;where\;q=1-p$
+
+
+
+# Question 3
+
+**Calculate the expected value and variance of the exponential distribution using the moment generating function.**
+
+**Answer:**
+
+LEt $P(X \leq x | \lambda)=\lambda e^{-\lambda x}\;and\;g(x)=e^{tx}$
+
+$\because M_X(t)=\int_{0}^{\infty}g(x)P_X(x)dx$
+
+$=\int_{0}^{\infty}e^{tx}\lambda e^{-\lambda x}dx$
+
+$\lambda\int_{0}^{\infty}e^{-x(\lambda-t)}dx$
+
+$=\lambda[-\frac{e^{-0(\lambda-t)}}{\lambda-t}+\frac{e^{-\infty(\lambda-t)}}{\lambda-t}]$
+
+$=\frac{\lambda}{\lambda-t}$
+
+$and\;M_{x}^{'}(t)=\frac{\lambda}{(\lambda-t)^2}$
+
+$and\;M_{x}^{"}(t)=\frac{2\lambda}{(\lambda-t)^3}$
+
+$\therefore E[X]=M_{x}^{'}(0)=\frac{\lambda}{(\lambda-0)^2}=\frac{1}{\lambda}$
+
+$and\;E[X^2]=M_{x}^{"}(t)=\frac{2\lambda}{(\lambda-0)^3}=\frac{2}{\lambda^2}$
+
+$\therefore Var(X)= E[X^2]-(E[x]^2) = \frac{2}{\lambda^2} - \frac{1}{\lambda^2}=\frac{1}{\lambda^2}$
