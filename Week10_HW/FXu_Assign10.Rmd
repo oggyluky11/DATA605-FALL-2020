@@ -1,0 +1,107 @@
+---
+title: "DATA605 ASSIGNMENT 10"
+author: "Fan Xu"
+date: "11/1/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load library, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+
+```
+
+# Question 1
+
+**Smith is in jail and has 1 dollar; he can get out on bail if he has 8 dollars. A guard agrees to make a series of bets with him. If Smith bets A dollars, he wins A dollars with probability .4 and loses A dollars with probability .6.**
+
+**Find the probability that he wins 8 dollars before losing all of his money if**
+
+## Part (a)
+**he bets 1 dollar each time (timid strategy).**
+
+**Anwer：**
+
+$Let\;P(win)=q=0.4\;and\;P(lose)=q=1-p=0.6$
+
+$P(win\;8\;dollars|bets\;1\;dollar\;each\;time)=$
+
+
+according to the formula of 'Gambler's Ruin':
+
+$P_{i}(n)=\frac{1-(\frac{q}{p})^t}{1-(\frac{q}{p})^n}\;if\;p\neq q$
+
+$\because$ 1 dollar each time and wins 8 dollars
+
+$\therefore\;i=1\;and\;n=8$
+
+$\therefore\;P_{1}(8)=\frac{1-(\frac{0.6}{0.4})^i}{1-(\frac{0.6}{0.4})^n}=0.02030135$
+
+```{r}
+p = 0.4
+q = 1-p
+
+(1-(q/p)^1)/(1-(q/p)^8)
+```
+
+## Part (b)
+**he bets, each time, as much as possible but not more than necessary to bring his fortune up to 8 dollars (bold strategy).**
+
+**Answer:**
+
+Using bold strategy, he fails to get out on bail whenever he loss any bets, therefore there is only one scenario where he can win 8 dollars:
+
+a. Win the first time, get 2 dollars,
+
+b. Win the second time, get 4 dollars,
+
+c. Win the third time, get $8 dollars.
+
+The probability of wining 3 times consectively is $P(3 wins consectively)=0.4^3=0.064$
+
+```{r}
+0.4^3
+
+```
+
+
+
+
+
+## Part (c)
+**Which strategy gives Smith the better chance of getting out of jail?**
+
+**Answer:**
+
+becuase 0.064 > 0.0203, therefore using bold strategy giving Smith better chance of getting out of jail.
