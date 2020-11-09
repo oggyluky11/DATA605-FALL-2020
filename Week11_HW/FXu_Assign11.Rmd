@@ -1,0 +1,173 @@
+---
+title: "DATA605 ASSIGNMENT 11"
+author: "Fan Xu"
+date: "11/8/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load library, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+
+```
+
+# Question 1
+
+**Using the “cars” dataset in R, build a linear model for stopping distance as a function of speed and replicate the analysis of your textbook chapter 3 (visualization, quality evaluation of the model, and residual analysis.)**
+
+## Load Dataset
+```{r load data}
+data <- datasets::cars
+
+data
+```
+
+
+
+## Visualization
+
+The data set shows a linear relationship between variables Distance and Speed.
+```{r plot data}
+plot(data, 
+     xlab = 'Speed', 
+     ylab = 'Distance', 
+     main = 'Scatter Plot: Distance vs Speed')
+
+
+```
+
+
+## Build Simple Linear Model
+
+A baseline model is built using all data points from the data.
+```{r}
+data.lm <- lm(dist ~ speed, data)
+
+data.lm
+
+plot(data, 
+     xlab = 'Speed', 
+     ylab = 'Distance', 
+     main = 'Linear Regression: Distance vs Speed')
+abline(data.lm)
+```
+
+
+
+
+
+## Quality Evaluation of Model
+
+According to the model summary,
+
+a. The distribution of residuals has median of -2.272 which is close to 0, the 1Q and 3Q are balanced around the median, however the maximum has a slightly larger magnitude than the minimum.
+
+b. The p-value of Intercept and slope all strong significance.
+
+c. The Multiple R-squared 0.6511 means that the model explained 65.11% of the data's variation. 
+
+d. The Adjusted R-squared is modified to take into account the number of predictors used in the model. Since the model has only one predictor, therefore this value is not useful in this case.
+
+d. The p-value of the F-statistic showed is very small, means that the model fits the data better than the model without independent variables.
+```{r model evaluation}
+summary(data.lm)
+
+```
+
+
+## Residual Analysis
+
+The resudual plot doesn't demostrate patterns of non-mormality, curvature or any violation of the constant variance assumption. However there are a few outliners with magnitudes of residual higher than 30 might have negative effect on building the reguression model.
+```{r Residual Analysis}
+plot(fitted(data.lm), 
+     resid(data.lm),
+     xlab = 'Predicted Y Value',
+     ylab = 'Residual',
+     main = 'Residual Plot')
+abline(h = 0, lty = 2)
+```
+
+The QQ-plot shows that the distribution of the residuals are close to normal except a few outliners.
+
+```{r qq plot}
+qqnorm(resid(data.lm))
+qqline(resid(data.lm))
+```
+
+## Rebuid a Model Without Outliners
+
+Removed data points with magnitude of residual higher than 30 and rebuilt the model.
+
+1. The residuals demostrated a distribution closer to normal distritubion compared to the baseline model.
+
+2. The P-values of the coeeficients demostrated stronger significance.
+
+3. The multiple R-sqared is 0.7263, means that the model explained 72.63% of the data's variation, higher than the baseline model.
+
+
+```{r rebuild model}
+data.mod <- cbind(data, resid = resid(data.lm)) %>% 
+  filter(abs(resid) <= 30)
+
+data.mod.lm <- lm(dist ~ speed, data.mod)
+
+summary(data.mod.lm)
+```
+
+
+```{r plot model 2}
+plot(data, 
+     xlab = 'Speed', 
+     ylab = 'Distance', 
+     main = 'Linear Regression 2: Distance vs Speed')
+abline(data.mod.lm)
+
+```
+
+
+The Resudual plot of the second model demostrated more significant normality.
+```{r Residual Analysis 2}
+plot(fitted(data.mod.lm), 
+     resid(data.mod.lm),
+     xlab = 'Predicted Y Value',
+     ylab = 'Residual',
+     main = 'Residual Plot 2')
+abline(h = 0, lty = 2)
+```
+
+The QQ-plot of the second model demostrated more significant normality as well.
+```{r qq plot 2}
+qqnorm(resid(data.mod.lm))
+qqline(resid(data.mod.lm))
+```
