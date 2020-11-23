@@ -1,0 +1,410 @@
+---
+title: "DATA605 ASSIGNMENT 12"
+author: "Fan Xu"
+date: "11/15/2020"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: united
+    toc_collapsed: yes
+    toc_depth: 5
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_collapsed: yes
+    toc_float: yes
+  pdf_document:
+    extra_dependencies:
+    - geometry
+    - multicol
+    - multirow
+  word_document:
+    toc: yes
+    toc_depth: '5'
+theme: lumen
+number_sections: yes
+toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load library, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(gridExtra)
+```
+
+
+# Introduction to Data Set
+
+The attached who.csv dataset contains real-world data from 2008. The variables included follow.
+
+  **Country:** name of the country
+
+  **LifeExp:** average life expectancy for the country in years
+
+  **InfantSurvival:** proportion of those surviving to one year or more
+
+  **Under5Survival:** proportion of those surviving to five years or more
+
+  **TBFree:** proportion of the population without TB.
+
+  **PropMD:** proportion of the population who are MDs
+  
+  **PropRN:** proportion of the population who are RNs
+  
+  **PersExp:** mean personal expenditures on healthcare in US dollars at average exchange rate
+  
+  **GovtExp:** mean government expenditures per capita on healthcare, US dollars at average exchange rate
+  
+  **TotExp:** sum of personal and government expenditures.
+
+
+# Question 1
+**Provide a scatterplot of LifeExp~TotExp, and run simple linear regression. Do not transform the variables. Provide and interpret the F statistics, R^2, standard error,and p-values only. Discuss whether the assumptions of simple linear regression met.**
+
+## Load Data
+```{r load data, message=FALSE, warning=FALSE}
+data <- read_csv('https://raw.githubusercontent.com/oggyluky11/DATA605-FALL-2020/master/Week12_HW/who.csv')
+
+data
+```
+
+
+
+## Scatterplot & Linear Regression: LifeExp vs TotExp
+
+(a) Provide a scatterplot of LifeExp~TotExp, and run simple linear regression. Do not transform the variables.
+```{r Scatterplot: LifeExp vs TotExp}
+#plot(data$TotExp, 
+#    data$LifeExp,
+#     xlab = 'TotExp',
+#     ylab = 'LifeExp',
+#     main = 'Scatter Plot: TotExp vs LifeExp')
+
+scatter_p1 <- data %>%
+  ggplot(aes(x = TotExp, y =LifeExp)) +
+  geom_point(alpha = 0.5, color = 'deeppink4') +
+  labs(title = 'Scatter Plot: \nLifeExp vs TotExp')
+
+
+lm_1 <- linear_reg() %>%
+  set_engine('lm') %>%
+  set_mode('regression') %>%
+  fit(LifeExp ~ TotExp, data)
+
+lm_p1 <-scatter_p1+
+  geom_smooth(method = 'lm', 
+              se=FALSE, 
+              formula = y~x,
+              color = 'black') +
+  labs(title = 'Linear Regression: \nLifeExp ~ TotExp')
+
+grid.arrange(scatter_p1, 
+             lm_p1, 
+             ncol = 2)
+
+```
+
+
+
+## Interpretation of Summary Statistics
+
+(b) Provide and interpret the F statistics, R^2, standard error,and p-values only.
+
+**Answer:**
+
+  **F Statistics & P-value:** the value is 65.26 with p-value very closed to zero, which means there is significant evidence that the current model is better than the null model. Furthermore, the small F statistics shows that the current model has a weak performance although it is better than the null model.
+  
+  **R^2:** the value 0.2577 means that only around 26% of the variability of the data can be explained by the current model.
+  
+  **Standard error:** the value 9.371 is the typical distance of the data points from the regression line of the current model.
+```{r summary 1}
+summary(lm_1$fit)
+```
+
+
+## Testing assumptions of Linear Regression
+
+(c) Discuss whether the assumptions of simple linear regression met.
+
+**Answer:**
+
+  (1) From the plot `Residuals vs Fitted`, we see that the residuals are not randomly distributed on the plot but a significant curve shape.
+  
+  (2) According to the plot `Normal Q-Q Plot`, the residuals do not fall on the theoretical normal line.
+  
+  (3) The plot `Histogram: Residuals` shows that the distribution of the residuals is bimodal and left skewed with long tail on the left.
+  
+  (4) The plot `Residuals` shows that the variation does not appear to be constant though out the model.
+  
+  In genearl, the assumptions of the linear regression are not met for the current model.
+```{r}
+test_linear <- function(model){
+
+  par(mfrow=c(2,2))
+
+  #Linearity
+  plot(fitted(model),
+     resid(model),
+     main = "Residuals vs Fitted", 
+     xlab = "Fitted Values", 
+     ylab = "Residuals",
+     col = 'deeppink4')
+  abline(h=0, lty = 2)
+
+  #Normality of Residuals
+  qqnorm(resid(model), 
+       col = 'deeppink4')
+  qqline(resid(model), 
+       lty = 2)
+
+  #Variablity
+  hist(resid(model), 
+     breaks=30, 
+     prob=TRUE,
+     main = "Histogram: Residuals", 
+     xlab = "Residuals", 
+     ylab = "Density",
+     col = 'deeppink4')
+  curve(dnorm(x, 
+            mean=mean(resid(model)), 
+            sd=sd(resid(model))), 
+      lty = 2, 
+      add = TRUE)
+
+  #Independence of Errors
+  plot(resid(model), 
+     main="Residuals",
+     ylab = "Residuals",
+     col = 'deeppink4')
+  abline(h = 0, 
+       lty = 2)
+  abline(h = sd(resid(model)),
+         lty = 3)
+  abline(h = -sd(resid(model)),
+         lty = 3)
+}
+```
+
+
+```{r linear assumptions 1}
+test_linear(lm_1$fit)
+```
+
+
+
+# Question 2
+
+**Raise life expectancy to the 4.6 power (i.e., LifeExp^4.6). Raise total expenditures to the 0.06 power (nearly a log transform, TotExp^.06). Plot LifeExp^4.6 as a function of TotExp^.06, and r re-run the simple regression model using the transformed variables. Provide and interpret the F statistics, R^2, standard error, and p-values. Which model is "better?"**
+
+
+## Scatterplot & Linear Regression: LifeExp^4.6 vs TotExp^0.06
+
+(a) Plot LifeExp^4.6 as a function of TotExp^.06, and r re-run the simple regression model using the transformed variables.
+```{r Scatterplot: LifeExp vs TotExp 2}
+data_mod <- data %>%
+  mutate(TotExp_Mod = TotExp^0.06,
+         LifeExp_Mod = LifeExp^4.6)
+
+scatter_p2 <- data_mod %>%
+  ggplot(aes(x = TotExp_Mod, y =LifeExp_Mod)) +
+  geom_point(alpha = 0.5, color = 'deeppink4') +
+  labs(title = 'Scatter Plot: \nLifeExp^4.6 vs TotExp^0.06')
+
+
+lm_2 <- linear_reg() %>%
+  set_engine('lm') %>%
+  set_mode('regression') %>%
+  fit(LifeExp_Mod ~ TotExp_Mod, data_mod)
+
+lm_p2 <-scatter_p2+
+  geom_smooth(method = 'lm', 
+              se=FALSE, 
+              formula = y~x,
+              color = 'black') +
+  labs(title = 'Linear Regression: \nLifeExp^4.6 ~ TotExp^0.06')
+
+grid.arrange(scatter_p2, 
+             lm_p2, 
+             ncol = 2)
+
+```
+
+
+
+## Interpretation of Summary Statistics
+
+(b) Provide and interpret the F statistics, R^2, standard error, and p-values.
+
+**Answer:**
+
+  **F Statistics & P-value:** the value is 507.7 with p-value very closed to zero, which means there is significant evidence that the current model is better than the null model. Furthermore, the large F statistics shows that the current model has a strong performance compared to the null model.
+  
+  **R^2:** the value 0.7298 means that only around 73% of the variability of the data can be explained by the current model.
+  
+  **Standard error:** the value 90490000 is the typical distance of the data points from the regression line of the current model.
+```{r summary 2}
+summary(lm_2$fit)
+```
+
+
+## Testing assumptions of Linear Regression
+
+Extra: Discuss whether the assumptions of simple linear regression met.
+
+
+  (1) From the plot `Residuals vs Fitted`, we see that the residuals appear to be randomly distributed on the plot.
+  
+  (2) According to the plot `Normal Q-Q Plot`, most of the residuals fall on the theoretical normal line.
+  
+  (3) The plot `Histogram: Residuals` shows that the distribution of the residuals is unimodal and slightly left skewed short long tails.
+  
+  (4) The plot `Residuals` shows that the variation appears to be constant though out the model and the residuals are independent from each other.
+  
+  In genearl, the assumptions of the linear regression are met for the current model.
+```{r linear assumptions 2}
+test_linear(lm_2$fit)
+```
+
+
+## Model Comparision
+
+(c) Which model is "better"?
+
+**Answer:**
+
+  (1) Model 2 has larger F-statistics model 1, means that the performance of the models are: Model 2 > Model 1 > Null Model.
+  
+  (2) Model 2 has larger R^2 than model 1, means that model 2 has better explainatibility to the variability of the data than model 1.
+  
+  In general, model 2 is better than model 1.
+
+
+# Question 3
+**Using the results from 3, forecast life expectancy when TotExp^.06 =1.5. Then forecast life expectancy when TotExp^.06=2.5.**
+
+**Answer:**
+
+  (1) When TotExp^.06 =1.5, the life expectancy is predicted to be 63.31153,
+  
+  (2) When TotExp^.06 =2.5, the life expectancy is predicted to be 86.50645.
+```{r prediction 1, message=FALSE, warning=FALSE}
+predict(lm_2$fit,data.frame(TotExp_Mod=1.5))^(1/4.6)
+
+predict(lm_2$fit,data.frame(TotExp_Mod=2.5))^(1/4.6)
+
+scatter_p3 <- scatter_p2 +
+  geom_point(x = 1.5, y = 193562414, color = 'red', size = 5)+
+  geom_point(x = 2.5, y = 813622630, color = 'red', size = 5)+
+  ylim(min(data_mod$LifeExp_Mod),830000000) +
+  xlim(min(data_mod$TotExp_Mod), 3)
+
+scatter_p4 <- scatter_p1 +
+  geom_point(x = 1.5^(1/0.06), y = 193562414^(1/4.6), color = 'red', size = 5)+
+  geom_point(x = 2.5^(1/0.06), y = 813622630^(1/4.6), color = 'red', size = 5)+
+  ylim(min(data$LifeExp),830000000^(1/4.6)) +
+  xlim(min(data$TotExp), 2.5^(1/0.06))
+
+grid.arrange(scatter_p3, scatter_p4, ncol = 2)
+```
+
+
+
+# Question 4
+
+**Build the following multiple regression model and interpret the F Statistics, R^2, standard error, and p-values. How good is the model?**
+
+**LifeExp = b0+b1 x PropMd + b2 x TotExp +b3 x PropMD x TotExp**
+
+
+## Build multiple linear regression model
+
+(a) Build the  multiple regression model: LifeExp = b0+b1 x PropMd + b2 x TotExp +b3 x PropMD x TotExp
+```{r linear model 3}
+lm_3 <- linear_reg() %>%
+  set_engine('lm') %>%
+  set_mode('regression') %>%
+  fit(LifeExp ~ PropMD + TotExp + PropMD*TotExp , data)
+
+```
+
+
+
+## Interpretation of Summary Statistics
+
+(b) Interpret the F Statistics, R^2, standard error, and p-values
+
+**Answer:**
+
+  **F Statistics & P-value:** the value is 34.49 with p-value very closed to zero, which means there is significant evidence that the current model is better than the null model. Furthermore, the large F statistics shows that the current model has a week performance although it is better than the null model.
+  
+  **R^2:** the value 0.3574 means that only around 36% of the variability of the data can be explained by the current model.
+  
+  **Standard error:** the value 8.765 is the typical distance of the data points from the regression line of the current model.
+```{r summary 3}
+summary(lm_3$fit)
+```
+
+Extra: Discuss whether the assumptions of simple linear regression met.
+
+  (1) From the plot `Residuals vs Fitted`, we see that the residuals are not randomly distributed on the plot but a significant curve shape.
+  
+  (2) According to the plot `Normal Q-Q Plot`, the residuals do not fall on the theoretical normal line.
+  
+  (3) The plot `Histogram: Residuals` shows that the distribution of the residuals is unimodal but left skewed with long tail on the left.
+  
+  (4) The plot `Residuals` shows that the variation does not appear to be constant though out the model.
+  
+  In genearl, the assumptions of the linear regression are not met for the current model.
+```{r linear assumptions 3, message=FALSE, warning=FALSE}
+test_linear(lm_3$fit)
+
+
+```
+
+
+# Question 5
+**Forecast LifeExp when PropMD=.03 and TotExp = 14. Does this forecast seem realistic? Why or why not?**
+
+**Answer:**
+The forecast of LifeExp given PropMD=.03 and TotExp = 14 is 107.696. The result does not seem to be realistic. Becuase according to our data set that a country has PropMD=.03 and TotExp = 14 seems to be outliner to the original data set (see `Scatter Plot: PropMD vs log(TotExp)`). Therefore the prediction of an outliner data point would not be realistic as well.
+
+```{r prediction 2}
+predict(lm_3$fit,data.frame(PropMD=.03, TotExp=14))
+
+#scatter_p5 <- data %>%
+#  ggplot(aes(x = PropMD, y =LifeExp)) +
+#  geom_point(alpha = 0.5, 
+#             color = ifelse(data$PropMD>=0.03, 'red', 'deeppink4'), 
+#             size = ifelse(data$PropMD>=0.03, 5, 1.5)) +
+#  labs(title = 'Scatter Plot: \nLifeExp vs PropMD') +
+#  annotate('text', x = 0.03, y = 76, label = 'Data point(s): \nPropMD>=0.03')
+
+#scatter_p6 <- data %>%
+#  ggplot(aes(x = TotExp, y =LifeExp)) +
+#  geom_point(alpha = 0.5, 
+#             color = ifelse(data$TotExp<=14, 'red', 'deeppink4'),
+#             size = ifelse(data$TotExp<=14, 5, 1.5)) +
+#  labs(title = 'Scatter Plot: \nLifeExp vs TotExp') +
+#  annotate('text', x = 100000, y = 49, label = 'Data point(s): \nTotExp<=14')
+
+#grid.arrange(scatter_p6, scatter_p5, ncol=2)
+
+data %>%
+  ggplot(aes(x = PropMD, y =log(TotExp))) +
+  geom_point(alpha = 0.5 , color = 'deeppink4') +
+  labs(title = 'Scatter Plot: \nPropMD vs log(TotExp)') +
+  geom_point(aes(x = 0.03, y = log(14), color = 'red', size = 5)) +
+  theme(legend.position = 'none') +
+  annotate('text', x = 0.03, y = log(25), label = 'PropMD=.03, TotExp=14')
+
+```
